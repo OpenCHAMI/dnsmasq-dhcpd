@@ -5,7 +5,6 @@ permissions:
   packages: write
 jobs:
   build:
-    name:
     runs-on: ubuntu-latest
   steps:
     - name: check out the repo
