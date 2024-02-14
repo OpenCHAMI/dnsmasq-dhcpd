@@ -28,7 +28,7 @@ def main():
     #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
     for i in ei_data:
       if 'bmc' not in i['Description']:
-          print(f"tag:{i['ComponentID']},tag:IPXEBOOT,tag:!PXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:27778/boot/v1/bootscript?mac={i['MACAddress']}\"", file=f)
+          print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:27778/boot/v1/bootscript?mac={i['MACAddress']}\"", file=f)
 
     f.close()
 
