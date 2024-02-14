@@ -1,6 +1,8 @@
 name: build and publish containers
 on: workflow_dispatch
-permissions: write-all
+permissions:
+  packages: write
+  contents: read
 jobs:
   build:
     runs-on: ubuntu-latest
