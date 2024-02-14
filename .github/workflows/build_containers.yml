@@ -20,4 +20,4 @@ jobs:
         with:
           context: "{{defaultContext}}:dnsmasq-dhcpd-dynamic"
           push: true
-          tags: ghcr.io/dnsmasq:dyanmic-test 
+          tags: ghcr.io/openchami/dnsmasq:dyanmic-test 
