@@ -5,5 +5,5 @@ COPY --chmod=555 --chown=dnsmasq:dnsmasq smd.py /bin/smd.py
 RUN pip3 install requests 
 
 EXPOSE 67/udp
-ENTRYPOINT smd.py && dnsmasq -k
+ENTRYPOINT smd.py && dnsmasq -k -d --log-dhcp
 
