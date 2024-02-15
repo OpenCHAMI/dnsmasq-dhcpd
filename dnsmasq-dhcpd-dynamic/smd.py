@@ -25,7 +25,7 @@ def main():
         else:
            print(f"{i['MACAddress']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
     hostsfile.close()
-    if os.path.isfile("/etc/dhcp-hostsfile-new") == False or filecmp.cmp("/etc/dhcp-hostsfile-new", "/etc/dhcp-hostsfile") == False:
+    if os.path.isfile("/etc/dhcp-hostsfile") == False or filecmp.cmp("/etc/dhcp-hostsfile-new", "/etc/dhcp-hostsfile") == False:
         sighup = True
         shutil.copyfile("/etc/dhcp-hostsfile-new", "/etc/dhcp-hostsfile")
     #TODO actually map all the BMCs straight from redfish, instead of creating dummy endpoints for them.
@@ -39,7 +39,7 @@ def main():
       if 'bmc' not in i['Description']:
           print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:27778/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
     optsfile.close()
-    if os.path.isfile("/etc/dhcp-optsfile-new") == False or filecmp.cmp("/etc/dhcp-optsfile-new","/etc/dhcp-optsfile") == False:
+    if os.path.isfile("/etc/dhcp-optsfile") == False or filecmp.cmp("/etc/dhcp-optsfile-new","/etc/dhcp-optsfile") == False:
         sighup = True
         shutil.copyfile(optsfile.name, "/etc/dhcp-optsfile")
 
