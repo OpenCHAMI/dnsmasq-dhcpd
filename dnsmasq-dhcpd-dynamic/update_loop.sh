@@ -1,6 +1,9 @@
 while true
 do
     smd.py
-    #TODO we should probably only kill on smd.py finding a change
+    rc=$?
+    if [$rc -e 1]; then
+        kill -1 $(pgrep dnsmasq)
+    fi
     sleep 10
 done
