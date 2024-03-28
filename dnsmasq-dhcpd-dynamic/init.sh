@@ -12,6 +12,7 @@ tftp-root=/usr/share/ipxe/
 dhcp-match=IPXEBOOT,175
 dhcp-match=PXEBOOT,60
 dhcp-option=tag:PXEBOOT,tag:!IPXEBOOT,option:bootfile-name,ipxe-x86_64.efi
+dhcp-option=option:netmask,${DHCP_NETMASK}
 EOF
 
 smd.py
