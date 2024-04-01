@@ -11,7 +11,7 @@ enable-tftp
 tftp-root=/usr/share/ipxe/
 dhcp-match=IPXEBOOT,175
 dhcp-match=PXEBOOT,60
-dhcp-option=tag:PXEBOOT,tag:!IPXEBOOT,option:bootfile-name,ipxe-x86_64.efi
+dhcp-option=tag:PXEBOOT,tag:!IPXEBOOT,option:bootfile-name,${BOOTFILE_NAME}
 dhcp-option=option:netmask,${DHCP_NETMASK}
 EOF
 
