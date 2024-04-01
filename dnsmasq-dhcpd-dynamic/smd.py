@@ -14,8 +14,10 @@ def getSMD(url):
 def main():
     sighup = False
     smd_endpoint=os.environ['smd_endpoint']
+    smd_port=os.environ['smd_port']
     bss_endpoint=os.environ['bss_endpoint']
-    ei_data = getSMD(f'http://{smd_endpoint}:27779/hsm/v2/Inventory/EthernetInterfaces')
+    bss_port=os.environ['bss_port']
+    ei_data = getSMD(f'http://{smd_endpoint}:{smd_port}/hsm/v2/Inventory/EthernetInterfaces')
     #hostsfile = tempfile.TemporaryFile(mode = "r+")
     hostsfile = open("/etc/dhcp-hostsfile-new", "w")
     #this for loop writes host entries
@@ -37,7 +39,7 @@ def main():
     #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
     for i in ei_data:
       if 'bmc' not in i['Description']:
-          print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:27778/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
+          print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:{bss_port}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
     optsfile.close()
     if os.path.isfile("/etc/dhcp-optsfile") == False or filecmp.cmp("/etc/dhcp-optsfile-new","/etc/dhcp-optsfile") == False:
         sighup = True
