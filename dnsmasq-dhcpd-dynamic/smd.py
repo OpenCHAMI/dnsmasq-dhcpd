@@ -11,8 +11,9 @@ def getSMD(url):
     return data
 
 def getNID(c_data, xname):
-    node_prefix = os.environ['node_prefix']
-    if not node_prefix:
+    if 'node_prefix' in os.environ:
+        node_prefix = os.environ['node_prefix']
+    else:
         node_prefix="nid"
     for c in c_data:
         if xname == c['ID']:
