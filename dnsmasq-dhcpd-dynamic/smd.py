@@ -23,7 +23,11 @@ def main():
     #this for loop writes host entries
     for i in ei_data:
         if i['Type'] != 'NodeBMC':
-            print(f"{i['MACAddress']},set:{i['ComponentID']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
+            if 'NID' in i:
+                nidname='nid'+'%0*d' % (3, i['NID'])
+                print(f"{i['MACAddress']},set:{nidname},{i['IPAddresses'][0]['IPAddress']},{nidname}", file=hostsfile)
+            else:
+                print(f"{i['MACAddress']},set:{i['ComponentID']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
         else:
            print(f"{i['MACAddress']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
     hostsfile.close()
@@ -39,7 +43,11 @@ def main():
     #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
     for i in ei_data:
       if 'bmc' not in i['Description']:
-          print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:{bss_port}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
+          if 'NID' in i:
+              nidname='nid'+'%0*d' % (3, i['NID'])
+              print(f"tag:{nidname},tag:IPXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:{bss_port}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
+          else:
+              print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"http://{bss_endpoint}:{bss_port}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
     optsfile.close()
     if os.path.isfile("/etc/dhcp-optsfile") == False or filecmp.cmp("/etc/dhcp-optsfile-new","/etc/dhcp-optsfile") == False:
         sighup = True
