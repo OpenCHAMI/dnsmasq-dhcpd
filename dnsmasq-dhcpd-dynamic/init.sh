@@ -17,7 +17,7 @@ then
         echo "DNS_SERVERS is not set!"
         env_check=1
 fi
-if [[ -z ${DHP_RANGE+x} ]]
+if [[ -z ${DHCP_RANGE+x} ]]
 then
         echo "DHCP_RANGE is not set!"
         env_check=1
@@ -33,7 +33,7 @@ then
         env_check=1
 fi
 
-# Exit if any ENV variables are missing
+# Exit if any requried ENV variables are missing
 if [[ env_check -eq 1 ]]
 then
 	echo "Missing requried ENV variables, Exiting"
