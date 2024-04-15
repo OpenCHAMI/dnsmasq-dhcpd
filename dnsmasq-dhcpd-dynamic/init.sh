@@ -41,35 +41,35 @@ then
 fi
 
 # ENV variables that if not set have some default value
-if [[ -z ${NODE_PREFIX+X} ]]
+if [[ -z ${NODE_PREFIX+x} ]]
 then
         echo "NODE_PREFIX is not set!"
         echo "Using default prefix 'nid'"
 	NODE_PREFIX="nid"
 fi
 
-if [[ -z ${SMD_ENDPOINT+X} ]]
+if [[ -z ${SMD_ENDPOINT+x} ]]
 then
         echo "SMD_ENDPOINT is not set!"
         echo "Using default value 'localhost'"
 	SMD_ENDPOINT="localhost"
 fi
 
-if [[ -z ${SMD_PORT+X} ]]
+if [[ -z ${SMD_PORT+x} ]]
 then
         echo "SMD_PORT is not set!"
         echo "Using default value '27779'"
         SMD_PORT="27779"
 fi
 
-if [[ -z ${BSS_ENDPOINT+X} ]]
+if [[ -z ${BSS_ENDPOINT+x} ]]
 then
         echo "BSS_ENDPOINT is not set!"
         echo "Using default value 'localhost'"
         BSS_ENDPOINT="localhost"
 fi
 
-if [[ -z ${BSS_PORT+X} ]]
+if [[ -z ${BSS_PORT+x} ]]
 then
         echo "BSS_PORT is not set!"
         echo "Using default value '27778'"
