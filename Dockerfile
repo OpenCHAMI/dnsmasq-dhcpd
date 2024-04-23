@@ -1,4 +1,16 @@
 # syntax=docker/dockerfile:1.4
+
+## Build iPXE binaries from source
+FROM cgr.dev/chainguard/wolfi-base AS builder
+RUN apk add git gcc binutils make perl xz xz-dev build-base && \
+       git clone https://github.com/ipxe/ipxe.git
+WORKDIR ipxe/src/
+RUN make bin/undionly.kpxe && \
+       make bin-x86_64-efi/ipxe.efi && \
+       cp -a bin/undionly.kpxe /tmp/ && \
+       cp -a bin-x86_64-efi/ipxe.efi /tmp/
+
+## Build dnsmasq-dhcp container image
 FROM cgr.dev/chainguard/wolfi-base
 
 RUN apk add dnsmasq
@@ -8,9 +20,9 @@ RUN mkdir -p /var/lib/misc
 
 # Create the directory to store the tftp files
 RUN mkdir -p /var/lib/tftpboot
-
-# Add the uefi ipxe binary to the tftp directory
-# TODO: Find a palce to download the latest version for inclusion
+#Copy PXE files from builder stage
+COPY --from=builder /tmp/undionly.kpxe /var/lib/tftpboot/
+COPY --from=builder /tmp/ipxe.efi /var/lib/tftpboot/ipxe-x86_64.efi
 
 VOLUME /etc/dnsmasq
 
