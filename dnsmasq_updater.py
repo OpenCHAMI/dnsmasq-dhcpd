@@ -45,7 +45,7 @@ def template_file(base_url, access_token, hostsfilename, optsfilename):
     ei_data = getSMD(f'{base_url}/hsm/v2/Inventory/EthernetInterfaces',access_token)
     component_data = getSMD(f"{base_url}/hsm/v2/State/Components", access_token)['Components']
     logging.warning(f"Retrieved {len(ei_data)} EthernetInterfaces and {len(component_data)} Components from {base_url}")
-    hostsfile = open(hostsfilename, "w")
+    hostsfile = open(hostsfilename, "w+")
     #this for loop writes host entries
     for i in ei_data:
         if i['Type'] != 'NodeBMC':
@@ -64,7 +64,7 @@ def template_file(base_url, access_token, hostsfilename, optsfilename):
     #for r in rf_data['RedfishEndpoints']:
     #    print(r['ID'] + ' ' + r['IPAddress'])
     #optsfile = tempfile.TemporaryFile(mode = "r+")
-    optsfile = open(optsfilename, "w")
+    optsfile = open(optsfilename, "w+")
     #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
     for i in ei_data:
       if 'bmc' not in i['Description']:
