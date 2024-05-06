@@ -2,9 +2,11 @@
 
 ## Build iPXE binaries from source
 FROM cgr.dev/chainguard/wolfi-base AS builder
-RUN apk add git gcc binutils make perl xz xz-dev build-base && \
-       git clone https://github.com/ipxe/ipxe.git
-WORKDIR ipxe/src/
+RUN apk add git gcc binutils make perl xz xz-dev build-base
+RUN mkdir -p /tmp
+WORKDIR /tmp
+RUN git clone https://github.com/ipxe/ipxe.git
+WORKDIR /tmp/ipxe/src/
 RUN make bin/undionly.kpxe && \
        make bin-x86_64-efi/ipxe.efi && \
        cp -a bin/undionly.kpxe /tmp/ && \

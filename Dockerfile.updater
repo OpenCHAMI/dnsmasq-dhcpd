@@ -1,29 +1,23 @@
 # syntax=docker/dockerfile:1.4
+FROM cgr.dev/chainguard/python:latest-dev as builder
 
-# Path: Dockerfile.updater
-FROM cgr.dev/chainguard/python:latest-dev AS builder
-
-# Set working directory
 WORKDIR /app
 
-# Copy only requirements file to install dependencies
 COPY requirements.txt .
 
-# Install dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install -r requirements.txt --user
 
-# Stage 2: Use second python base image as the main container
 FROM cgr.dev/chainguard/python:latest
 
-# Set working directory
 WORKDIR /app
 
-# Copy dependencies from the builder stage
-COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
+# Make sure you update Python version in path
+COPY --from=builder /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
 
+COPY dnsmasq_updater.py .
 
 # Copy the rest of the application code
-COPY smd.py /smd.py
+COPY dnsmasq_updater.py .
 
 # Set the command to run your Python application
-ENTRYPOINT ["python", "smd.py"]
+ENTRYPOINT ["python", "/app/dnsmasq_updater.py"]
