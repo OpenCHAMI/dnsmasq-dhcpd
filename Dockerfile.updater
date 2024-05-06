@@ -1,0 +1,23 @@
+# syntax=docker/dockerfile:1.4
+FROM cgr.dev/chainguard/python:latest-dev as builder
+
+WORKDIR /app
+
+COPY requirements.txt .
+
+RUN pip install -r requirements.txt --user
+
+FROM cgr.dev/chainguard/python:latest
+
+WORKDIR /app
+
+# Make sure you update Python version in path
+COPY --from=builder /home/nonroot/.local/lib/python3.12/site-packages /home/nonroot/.local/lib/python3.12/site-packages
+
+COPY dnsmasq_updater.py .
+
+# Copy the rest of the application code
+COPY dnsmasq_updater.py .
+
+# Set the command to run your Python application
+ENTRYPOINT ["python", "/app/dnsmasq_updater.py"]
