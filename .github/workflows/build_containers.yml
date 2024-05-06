@@ -8,7 +8,7 @@ permissions:
   packages: write
   contents: read
 jobs:
-  build-local-ca:
+  build-dnsmasq:
     runs-on: ubuntu-latest
     steps:
       - name: check out the repo
@@ -38,11 +38,20 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and push dnsmasq
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64
           context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+      - name : Build and push dnsmasq-loader
+        uses: docker/build-push-action@v5
+        with:
+          platforms: linux/amd64
+          context: .
+          file: ./Dockerfile.loader
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
