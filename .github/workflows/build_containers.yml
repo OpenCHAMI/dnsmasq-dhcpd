@@ -8,7 +8,7 @@ permissions:
   packages: write
   contents: read
 jobs:
-  build:
+  build-local-ca:
     runs-on: ubuntu-latest
     steps:
       - name: check out the repo
@@ -20,6 +20,7 @@ jobs:
           # list of Docker images to use as base name for tags
           images: |
             ghcr.io/openchami/dnsmasq            
+
           # generate Docker tags based on the following events/attributes
           tags: |
             type=schedule
@@ -40,6 +41,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
+          platforms: linux/amd64
           context: .
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
