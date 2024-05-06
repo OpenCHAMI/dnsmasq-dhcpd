@@ -46,12 +46,14 @@ jobs:
           push: ${{ github.event_name != 'pull_request' }}
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
-      - name : Build and push dnsmasq-loader
+      - name: Build and push dnsmasq-loader
         uses: docker/build-push-action@v5
         with:
           platforms: linux/amd64
           context: .
           file: ./Dockerfile.loader
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+           ghcr.io/openchami/dnsmasq-loader:latest
+           ghcr.io/openchami/dnsmasq-loader:${{ steps.meta.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
