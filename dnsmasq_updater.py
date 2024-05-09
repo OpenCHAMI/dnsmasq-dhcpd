@@ -10,6 +10,7 @@ import time
 import sys
 import argparse
 import logging
+from pathlib import Path
 
 # This script needs an auth token and must be able to renew that token on use.
 
@@ -45,36 +46,38 @@ def template_file(base_url, access_token, hostsfilename, optsfilename):
     ei_data = getSMD(f'{base_url}/hsm/v2/Inventory/EthernetInterfaces',access_token)
     component_data = getSMD(f"{base_url}/hsm/v2/State/Components", access_token)['Components']
     logging.warning(f"Retrieved {len(ei_data)} EthernetInterfaces and {len(component_data)} Components from {base_url}")
-    hostsfile = open(hostsfilename, "w")
-    #this for loop writes host entries
-    for i in ei_data:
-        if i['Type'] != 'NodeBMC':
-            nidname=getNID(component_data, i['ComponentID'])
-            if nidname:
-                print(f"{i['MACAddress']},set:{nidname},{i['IPAddresses'][0]['IPAddress']},{nidname}", file=hostsfile)
+    hostsfilepath = Path(hostsfilename)
+    hostsfilepath.parent.mkdir(parents=True, exist_ok=True)
+    with hostsfilepath.open("w") as hostsfile:
+        #this for loop writes host entries
+        for i in ei_data:
+            if i['Type'] != 'NodeBMC':
+                nidname=getNID(component_data, i['ComponentID'])
+                if nidname:
+                    print(f"{i['MACAddress']},set:{nidname},{i['IPAddresses'][0]['IPAddress']},{nidname}", file=hostsfile)
+                else:
+                    print(f"{i['MACAddress']},set:{i['ComponentID']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
             else:
-                print(f"{i['MACAddress']},set:{i['ComponentID']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
-        else:
-           print(f"{i['MACAddress']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
-    hostsfile.close()
-    logging.warning(f"Generated {hostsfilename}")
+               print(f"{i['MACAddress']},{i['IPAddresses'][0]['IPAddress']},{i['ComponentID']}", file=hostsfile)
+        logging.warning(f"Generated {hostsfilename}")
 
     #TODO actually map all the BMCs straight from redfish, instead of creating dummy endpoints for them.
     #rf_data = getSMD(f'http://{smd_endpoint}:27779/hsm/v2/Inventory/RedfishEndpoints')
     #for r in rf_data['RedfishEndpoints']:
     #    print(r['ID'] + ' ' + r['IPAddress'])
     #optsfile = tempfile.TemporaryFile(mode = "r+")
-    optsfile = open(optsfilename, "w")
-    #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
-    for i in ei_data:
-      if 'bmc' not in i['Description']:
-          nidname=getNID(component_data, i['ComponentID'])
-          if nidname:
-              print(f"tag:{nidname},tag:IPXEBOOT,option:bootfile-name,\"{base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
-          else:
-              print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"{base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
-    optsfile.close()
-    logging.warning(f"Generated {optsfilename}")
+    optsfilepath = Path(optsfilename)
+    optsfilepath.parent.mkdir(parents=True, exist_ok=True)
+    with optsfilepath.open("w") as optsfile:
+        #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
+        for i in ei_data:
+          if 'bmc' not in i['Description']:
+              nidname=getNID(component_data, i['ComponentID'])
+              if nidname:
+                  print(f"tag:{nidname},tag:IPXEBOOT,option:bootfile-name,\"{base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
+              else:
+                  print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"{base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
+        logging.warning(f"Generated {optsfilename}")
 
 
 
