@@ -92,7 +92,7 @@ def main():
     parser.add_argument('--base-url', help='Base URL for OpenCHAMI endpoint.  This flag will override the OCHAMI_BASEURL environment variable.')
     parser.add_argument('--access-token', help='Access token for OpenCHAMI endpoint This flag will override the OCHAMI_ACCESS_TOKEN environment variable.')
     parser.add_argument('--hosts-file', help='Path to the hosts file', default='/configs/site/hosts/hostsfile')
-    parser.add_argument('--opts-file', help='Path to the options file', default='/configs/site/hosts/optsfile')
+    parser.add_argument('--opts-file', help='Path to the options file', default='/configs/site/opts/optsfile')
     
     args = parser.parse_args()
 
