@@ -42,7 +42,7 @@ def getNID(c_data, xname):
     else:
         return None
 
-def template_file(base_url, access_token, hostsfilename, optsfilename):
+def template_file(base_url, bootscript_base_url, access_token, hostsfilename, optsfilename):
     ei_data = getSMD(f'{base_url}/hsm/v2/Inventory/EthernetInterfaces',access_token)
     component_data = getSMD(f"{base_url}/hsm/v2/State/Components", access_token)['Components']
     logging.warning(f"Retrieved {len(ei_data)} EthernetInterfaces and {len(component_data)} Components from {base_url}")
@@ -74,9 +74,9 @@ def template_file(base_url, access_token, hostsfilename, optsfilename):
           if 'bmc' not in i['Description']:
               nidname=getNID(component_data, i['ComponentID'])
               if nidname:
-                  print(f"tag:{nidname},tag:IPXEBOOT,option:bootfile-name,\"{base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
+                  print(f"tag:{nidname},tag:IPXEBOOT,option:bootfile-name,\"{bootscript_base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
               else:
-                  print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"{base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
+                  print(f"tag:{i['ComponentID']},tag:IPXEBOOT,option:bootfile-name,\"{bootscript_base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
         logging.warning(f"Generated {optsfilename}")
 
 
@@ -96,7 +96,9 @@ def main():
     parser.add_argument('--access-token', help='Access token for OpenCHAMI endpoint This flag will override the OCHAMI_ACCESS_TOKEN environment variable.')
     parser.add_argument('--hosts-file', help='Path to the hosts file', default='/configs/site/hosts/hostsfile')
     parser.add_argument('--opts-file', help='Path to the options file', default='/configs/site/opts/optsfile')
-    
+    parser.add_argument('--bootscript-base-url', help='Hostname (or ip address) to be used when requesting the bootscript')
+
+
     args = parser.parse_args()
 
     if args.base_url:
@@ -112,6 +114,16 @@ def main():
         else:
             logging.warning(f'Configuring base_url based on default value of "http://localhost"')  
             base_url = 'http://localhost'
+    if os.environ.get('OCHAMI_BOOTSCRIPT_BASEURL') is not None:
+        logging.warning(f'Configuring bootscript_base_url based on OCHAMI_BOOTSCRIPT_BASEURL which is "{os.environ["OCHAMI_BOOTSCRIPT_BASEURL"]}"')
+        bootscript_base_url = os.environ['OCHAMI_BOOTSCRIPT_BASEURL']
+    else:
+        if args.bootscript_base_url:
+            logging.warning(f'Configuring bootscript_base_url based on flag value of "{args.bootscript_base_url}"')
+            bootscript_base_url = args.bootscript_base_url
+        else:
+            logging.warning(f'Configuring bootscript_base_url based on default value of "{base_url}"')  
+            bootscript_base_url = base_url
 
     if args.access_token:
         if os.environ.get('OCHAMI_ACCESS_TOKEN') is not None:
@@ -131,7 +143,7 @@ def main():
     # Main loop to run template_file() every minute
     while True:
         try:
-            template_file(base_url, access_token, args.hosts_file, args.opts_file)  # Execute the subroutine
+            template_file(base_url, bootscript_base_url, access_token, args.hosts_file, args.opts_file)  # Execute the subroutine
             time.sleep(60)  # Wait for 60 seconds (1 minute)
         except KeyboardInterrupt:
             print("KeyboardInterrupt received, exiting...")
