@@ -51,7 +51,8 @@ def template_file(base_url, bootscript_base_url, access_token, hostsfilename, op
     with hostsfilepath.open("w") as hostsfile:
         #this for loop writes host entries
         for i in ei_data:
-            if i['Type'] != 'NodeBMC':
+            itype = i['IPAddresses'][0]['Network']
+            if i['Type'] != 'NodeBMC' and itype == 'NMN':
                 nidname=getNID(component_data, i['ComponentID'])
                 if nidname:
                     print(f"{i['MACAddress']},set:{nidname},{i['IPAddresses'][0]['IPAddress']},{nidname}", file=hostsfile)
@@ -71,7 +72,8 @@ def template_file(base_url, bootscript_base_url, access_token, hostsfilename, op
     with optsfilepath.open("w") as optsfile:
         #this for loop writes option entries, we wouldn't need it if the BSS wasn't MAC specific
         for i in ei_data:
-          if 'bmc' not in i['Description']:
+          itype = i['IPAddresses'][0]['Network']
+          if 'bmc' not in i['Description'] and itype == 'NMN':
               nidname=getNID(component_data, i['ComponentID'])
               if nidname:
                   print(f"tag:{nidname},tag:IPXEBOOT,option:bootfile-name,\"{bootscript_base_url}/boot/v1/bootscript?mac={i['MACAddress']}\"", file=optsfile)
